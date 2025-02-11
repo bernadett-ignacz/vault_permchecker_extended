@@ -93,12 +93,12 @@ document.getElementById('apiForm').addEventListener('submit', async function(eve
                         read: permissions.read,
                         edit: permissions.edit
                     });
-                } else if (actionNames === 'object_actions') {
+                } else if (actionNames === 'object_actions' || fieldName === 'object_actions' ) {
                     if (!objectMap[objectName]) {
                         objectMap[objectName] = [];
                     }
                     objectMap[objectName].push({
-                        objectType: fieldName,
+                        objectType: actionNames === 'object_actions' ? fieldName : objectName,
                         create: permissions.create || false,
                         read: permissions.read || false,
                         edit: permissions.edit || false,

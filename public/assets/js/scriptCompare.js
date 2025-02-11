@@ -74,7 +74,7 @@ const response = await fetch("/api/proxySecondUser", {
           read: permissions.read,
           edit: permissions.edit,
         });
-      } else if (actionCompareNames === "object_actions") {
+      } else if (actionCompareNames === "object_actions" || fieldCompareName === 'object_actions') {
         // If the objectName does not exist in the objectCompareMap, initialize an empty array
         if (!objectCompareMap[objectName]) {
           objectCompareMap[objectName] = [];
@@ -82,7 +82,7 @@ const response = await fetch("/api/proxySecondUser", {
 
         // Push a new object containing the fieldCompareName (objectType) and CRUD permissions into the array
         objectCompareMap[objectName].push({
-          objectType: fieldCompareName,
+          objectType: actionCompareNames === "object_actions" ? fieldCompareName : objectName,
           create: permissions.create || false,
           read: permissions.read || false,
           edit: permissions.edit || false,
