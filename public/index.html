@@ -1,0 +1,2458 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>permission-checker-home-page-compare-table</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/tabs.css" />
+</head>
+
+<body>
+    <div>
+        <div class="background-color">
+            <div class="container div-center-block w-40-override">
+                <h1>Vault Permission Checker</h1>
+                <p>Enter information below&nbsp;to get started.</p>
+                <div class="mt-5">
+                    <form id="apiForm">
+                        <div class="mb-3"><label class="form-label" for="sessionId">Session Id<span class="mandatory">&nbsp;*</span></label><input class="form-control" type="text" id="sessionId" name="sessionId" required></div>
+                        <div class="mb-3"><label class="form-label" for="dns">Vault DNS<span class="mandatory">&nbsp;*</span></label><input class="form-control" type="text" id="dns" name="dns" required></div>
+                        <div class="mb-3"><label class="form-label" for="userId">User Id<span class="mandatory">&nbsp;*</span></label><input class="form-control" type="text" id="userId" name="userId"></div>
+                        <div class="mb-3"><label class="form-label" for="userIdCompare">User Id 2 to Compare</label><input class="form-control" type="text" id="userIdCompare" name="userIdCompare"></div>
+                        <div class="mb-5"><label class="form-label" for="apiVersion">API Version</label><select class="form-select" id="apiVersion" name="apiVersion">
+                                <optgroup label="API Versions">
+                                    <option value="v24.3" selected="v24.3">v24.3</option>
+                                    <option value="v24.2">v24.2</option>
+                                    <option value="v24.1">v24.1</option>
+                                    <option value="v24.1">v23.3</option>
+                                    <option value="v24.1">v23.2</option>
+                                    <option value="v24.1">v23.1</option>
+                                    <option value="v24.1">v22.3</option>
+                                    <option value="v24.1">v22.2</option>
+                                    <option value="v24.1">v22.1</option>
+                                </optgroup>
+                            </select></div><button onclick="clearAndHideTables()" class="btn btn-color" id="submitButton" type="submit">Get Permissions</button>
+                            <button onclick="clearAndHideTables()" class="btn btn-color drop-down-margin-left" id="submitButtonCompare" type="submit">Compare Permissions</button>
+                            <button onclick="clearAndHideTables()" class="btn btn-color drop-down-margin-left" id="submitMyPermission" type="submit">Show My Permissions</button>
+                            <span id="loadingIcon" style="display: none; margin-left: 10px;">
+                                <img src="/assets/img/loading-gif.gif" style="width: 20px;">
+                            </span>
+                    </form>
+                </div>
+            </div>
+            <div class="container expand-button-mt w-40-override mb-5">
+              <p class="expand-button-font">
+
+                  <button class="expand-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExpand" aria-expanded="false" aria-controls="collapseExpand">
+                      <span><img src="/assets/img/plus-lg.svg"></span>
+                  </button>
+
+                  &nbsp;Expand to find the required fields to enter for different permissions options.<span class="mandatory">&nbsp;*</span>
+              </p>      
+                    <div class="collapse" id="collapseExpand">
+                      <div class="card card-body expand-button-content-align">
+                          <ul class="list-group list-group-flush">
+                              <li class="list-group-item"><b>Get Permissions:</b> Session Id, Vault DNS, User Id.</li>
+                              <li class="list-group-item"><b>Compare Permissions:</b> Session Id, Vault DNS, User Id, User Id 2 to Compare.</li>
+                              <li class="list-group-item"><b>Show My Permissions:</b> Session Id, Vault DNS.</li>
+                            </ul>
+                      </div>
+                    </div>   
+          </div>
+        </div>
+    </div>
+
+<!--GO BACK BUTTON-->
+
+<div>
+    <div class="background-color">
+      <div>
+        <a id="scroll-to-top"></a>
+      </div>
+      <div class="go-back-margin">
+        <a href="/" class="go-back-anchor">
+          <button class="go-back">
+            <span class="go-back-icn-size"
+              ><img src="/assets/img/chevron-double-left.svg" /></span
+            >Switch User
+          </button>
+        </a>
+      </div>
+
+<!--USER TABLES-->
+  
+  <div class="container div-center-block mb-5 m-t-0-override d-flex justify-content-center">
+    <div class="table-container">
+      <h1 class="h5">User Info</h1>
+      <div class="table-responsive">
+        <table class="table brand-color" id="userTable">
+          <thead>
+            <tr>
+              <th>Full Name</th>
+              <th>User Name</th>
+              <th>Email</th>
+              <th>Security Profile</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div class="table-container d-none compare-container">
+      <h1 class="h5">Compare User Info</h1>
+      <div class="table-responsive">
+        <table class="table brand-color" id="userCompareTable">
+          <thead>
+            <tr>
+              <th>Full Name</th>
+              <th>User Name</th>
+              <th>Email</th>
+              <th>Security Profile</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+<!-- PERMISSION TABLES -->
+
+<div>
+    <div class="tab-container">
+      <div class="tab active" onclick="showTab('tab1')">Admin</div>
+      <div class="tab" onclick="showTab('tab2')">Application</div>
+      <div class="tab" onclick="showTab('tab3')">Objects</div>
+      <div class="tab" onclick="showTab('tab4')">Tabs</div>
+      <div class="tab" onclick="showTab('tab5')">Pages</div>
+      <div class="tab" onclick="showTab('tab6')">Mobile</div>
+    </div>
+    <!-- ADMIN-->
+    <div id="tab1" class="tab-content active">
+   <!-- Configuration Tables -->
+
+<!-- Configuration Table All with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <h1 class="h5">Configuration</h1>
+    <div class="table-responsive">
+      <table class="table brand-color" id="allConfigTable">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Configuration</th>
+            <th>All Configuration Read</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <h1 class="h5">Compare Configuration</h1>
+    <div class="table-responsive">
+      <table class="table brand-color" id="compareAllConfigTable">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Configuration</th>
+            <th>All Configuration Read</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Configuration Table 1 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="configTableOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Edit</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareConfigTableOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Edit</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Configuration Table 2 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="configTableTwo">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareConfigTableTwo">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Configuration Table 3 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="configTableThree">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareConfigTableThree">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Configuration Table 4 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="configTableFour">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Audit</th>
+            <th>System Audit</th>
+            <th>Login Audit</th>
+            <th>Document Audit</th>
+            <th>Object Record Audit</th>
+            <th>Domain Audit</th>
+            <th>Vault Java SDK</th>
+            <th>API Usage</th>
+            <th>Collab Auth Error Logs</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareConfigTableFour">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Audit</th>
+            <th>System Audit</th>
+            <th>Login Audit</th>
+            <th>Document Audit</th>
+            <th>Object Record Audit</th>
+            <th>Domain Audit</th>
+            <th>Vault Java SDK</th>
+            <th>API Usage</th>
+            <th>Collab Auth Error Logs</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Configuration Table 5 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="configTableFive">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+            <th>Queue Log</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareConfigTableFive">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+            <th>Queue Log</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Configuration Table 6 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="configTableSix">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+            <th>Email Log</th>
+            <th>Reprocess Emails</th>
+            <th>Delete Emails</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareConfigTableSix">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+            <th>Email Log</th>
+            <th>Reprocess Emails</th>
+            <th>Delete Emails</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Configuration Table 7 with Compare -->
+<div class="container div-center-block mb-5 m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="configTableSeven">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Manage Sharing Actions</th>
+            <th>Manage Mobile Tabs</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareConfigTableSeven">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Manage Sharing Actions</th>
+            <th>Manage Mobile Tabs</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div> 
+
+
+<!-- Domain Administration Tables -->
+
+<!-- Domain Administration Table All with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <h1 class="h5">Domain Administration</h1>
+    <div class="table-responsive">
+      <table class="table brand-color " id="domainTableAll">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Domain Admin</th>
+            <th>All Domain Admin Read</th>
+            <th>Reset All Passwords</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <h1 class="h5">Compare Domain Administration</h1>
+    <div class="table-responsive">
+      <table class="table brand-color" id="compareDomainTableAll">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Domain Admin</th>
+            <th>All Domain Admin Read</th>
+            <th>Reset All Passwords</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Domain Administration Table 1 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="domainTableOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Edit</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareDomainTableOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Edit</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Domain Administration Table 2 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="domainTableTwo">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareDomainTableTwo">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Domain Administration Table 3 with Compare -->
+<div class="container div-center-block mb-5 m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="domainTableThree">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareDomainTableThree">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- Operations Tables -->
+
+<!-- Operations Table All with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <h1 class="h5">Operations</h1>
+    <div class="table-responsive">
+      <table class="table brand-color" id="operationsTableAll">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Operations</th>
+            <th>All Operations Read</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <h1 class="h5">Compare Operations</h1>
+    <div class="table-responsive">
+      <table class="table brand-color" id="compareOperationsTableAll">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Operations</th>
+            <th>All Operations Read</th>
+          </tr>
+        </thead>
+        <tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Operations Table 1 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="operationsTableOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+            <th>Interact</th>
+            <th>Manage SDK Job Metadata</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareOperationsTableOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+            <th>Interact</th>
+            <th>Manage SDK Job Metadata</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Operations Table 2 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="operationsTableTwo">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareOperationsTableTwo">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Operations Table 3 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="operationsTableThree">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareOperationsTableThree">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Operations Table 4 with Compare -->
+<div class="container div-center-block mb-5 m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="operationsTableFour">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareOperationsTableFour">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- Security Tables -->
+
+<!-- Security Table All with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <h1 class="h5">Security</h1>
+    <div class="table-responsive">
+      <table class="table brand-color" id="securityTableAll">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Security Admin</th>
+            <th>All Security Admin Read</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <h1 class="h5">Compare Security</h1>
+    <div class="table-responsive">
+      <table class="table brand-color" id="compareSecurityTableAll">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Security Admin</th>
+            <th>All Security Admin Read</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Security Table 1 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="securityTableOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Edit</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareSecurityTableOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Edit</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Security Table 2 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="securityTableTwo">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Assign Group</th>
+            <th>Grant Support Login</th>
+            <th>Delegate Admin</th>
+            <th>Add Cross-Domain Users</th>
+            <th>Manage User Object</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareSecurityTableTwo">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Assign Group</th>
+            <th>Grant Support Login</th>
+            <th>Delegate Admin</th>
+            <th>Add Cross-Domain Users</th>
+            <th>Manage User Object</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Security Table 3 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="securityTableThree">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+            <th>Assign Users</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareSecurityTableThree">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+            <th>Assign Users</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Security Table 4 with Compare -->
+<div class="container div-center-block mb-5 m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="securityTableFour">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareSecurityTableFour">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- Settings Tables -->
+
+<!-- Settings Table All with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <h1 class="h5">Settings</h1>
+    <div class="table-responsive">
+      <table class="table brand-color" id="settingsTableAll">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Settings Edit</th>
+            <th>All Settings Read</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <h1 class="h5">Compare Settings</h1>
+    <div class="table-responsive">
+      <table class="table brand-color" id="compareSettingsTableAll">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Settings Edit</th>
+            <th>All Settings Read</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Table 1 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="settingsTableOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Edit</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareSettingsTableOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Edit</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Table 2 with Compare -->
+<div class="container div-center-block mb-5 m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="settingsTableTwo">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareSettingsTableTwo">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- About Tables -->
+
+<!-- About Table with Compare -->
+<div class="container div-center-block mb-5 m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <h1 class="h5">About</h1>
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="aboutTable">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <h1 class="h5">Compare About</h1>
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareAboutTable">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Deployment Tables -->
+
+<!-- Deployment Table 1 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <h1 class="h5">Deployment</h1>
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="deploymentTableOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Create</th>
+            <th>Deploy</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <h1 class="h5">Compare Deployment</h1>
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareDeploymentTableOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Create</th>
+            <th>Deploy</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Deployment Table 2 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="deploymentTableTwo">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Vault Configuration Report</th>
+            <th>Vault Comparison</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareDeploymentTableTwo">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Vault Configuration Report</th>
+            <th>Vault Comparison</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Deployment Table 3 with Compare -->
+<div class="container div-center-block mb-5 m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="deploymentTableThree">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareDeploymentTableThree">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Create</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- End of Admin Tables-->         
+    </div>
+    <!-- APPLICATION-->
+    <div id="tab2" class="tab-content">
+
+<!-- Vault Actions Tables -->
+
+<!-- Vault Actions Table All with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <h1 class="h5">Vault Actions</h1>
+    <div class="table-responsive">
+      <table class="table brand-color" id="vaultActionsTableAll">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Vault Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <h1 class="h5">Compare Vault Actions</h1>
+    <div class="table-responsive">
+      <table class="table brand-color" id="compareVaultActionsTableAll">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Vault Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions Table 1 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsTableOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All</th>
+            <th>Read Dashboards and Reports</th>
+            <th>Create Dashboards</th>
+            <th>Delete Dashboards</th>
+            <th>Share Dashboards</th>
+            <th>Schedule Reports</th>
+            <th>Administer Dashboards</th>
+            <th>Display API Name Dashboards</th>
+            <th>Read Group Membership</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsTableOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All</th>
+            <th>Read Dashboards and Reports</th>
+            <th>Create Dashboards</th>
+            <th>Delete Dashboards</th>
+            <th>Share Dashboards</th>
+            <th>Schedule Reports</th>
+            <th>Administer Dashboards</th>
+            <th>Display API Name Dashboards</th>
+            <th>Read Group Membership</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions Table 2 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsTableTwo">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Workflow</th>
+            <th>Start</th>
+            <th>Participate</th>
+            <th>Read and Understand</th>
+            <th>eSignature</th>
+            <th>Query</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsTableTwo">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Workflow</th>
+            <th>Start</th>
+            <th>Participate</th>
+            <th>Read and Understand</th>
+            <th>eSignature</th>
+            <th>Query</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions Table 3 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsTableThree">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Workflow Admin</th>
+            <th>Cancel</th>
+            <th>View Active</th>
+            <th>Reassign</th>
+            <th>Update Participants</th>
+            <th>Email Participants</th>
+            <th>Update Workflow Dates</th>
+            <th>Replace Workflow Owner</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsTableThree">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Workflow Admin</th>
+            <th>Cancel</th>
+            <th>View Active</th>
+            <th>Reassign</th>
+            <th>Update Participants</th>
+            <th>Email Participants</th>
+            <th>Update Workflow Dates</th>
+            <th>Replace Workflow Owner</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions Table 4 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsTableFour">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All API</th>
+            <th>Access API</th>
+            <th>Events API</th>
+            <th>Metadata API</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsTableFour">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All API</th>
+            <th>Access API</th>
+            <th>Events API</th>
+            <th>Metadata API</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions Table 5 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsTableFive">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Create CrossLink</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsTableFive">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Create CrossLink</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions Table 6 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsTableSix">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Manage Tags</th>
+            <th>Merge Anchors</th>
+            <th>Remove Annotations</th>
+            <th>Manage Anchors</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsTableSix">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Manage Tags</th>
+            <th>Merge Anchors</th>
+            <th>Remove Annotations</th>
+            <th>Manage Anchors</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions Table 7 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsTableSeven">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Cancel Checkout</th>
+            <th>Download Document</th>
+            <th>Download Rendition</th>
+            <th>Bulk Delete</th>
+            <th>Bulk Update</th>
+            <th>Always Allow Unclassified</th>
+            <th>Vault File Manager</th>
+            <th>Download Non-Protected Rendition</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsTableSeven">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Cancel Checkout</th>
+            <th>Download Document</th>
+            <th>Download Rendition</th>
+            <th>Bulk Delete</th>
+            <th>Bulk Update</th>
+            <th>Always Allow Unclassified</th>
+            <th>Vault File Manager</th>
+            <th>Download Non-Protected Rendition</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions Table 8 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsTableEight">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Bulk Action</th>
+            <th>Merge Records</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsTableEight">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Bulk Action</th>
+            <th>Merge Records</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions Tables -->
+
+<!-- Vault Actions RIM 1 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsRIMOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>XEVMPD Bulk Update</th>
+            <th>XEVPRM Bulk Submit</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsRIMOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>XEVMPD Bulk Update</th>
+            <th>XEVPRM Bulk Submit</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions Table 9 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsTableNine">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Allow As A Delegate</th>
+            <th>View User Information</th>
+            <th>View User Profile</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsTableNine">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Allow As A Delegate</th>
+            <th>View User Information</th>
+            <th>View User Profile</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions Table 10 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsTableTen">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Manage Archive</th>
+            <th>User Filters</th>
+            <th>View Archive</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsTableTen">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Manage Archive</th>
+            <th>User Filters</th>
+            <th>View Archive</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions PROMOMATS with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsPromomats">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Send to CDN</th>
+            <th>Approved Email</th>
+            <th>Multichannel Loader</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsPromomats">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Send to CDN</th>
+            <th>Approved Email</th>
+            <th>Multichannel Loader</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions Table 11 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsTableEleven">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Share Views</th>
+            <th>Make Mandatory</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsTableEleven">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Share Views</th>
+            <th>Make Mandatory</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions Table 12 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsTableTwelve">
+        <thead>
+          <tr>
+            <th></th>
+            <th>View</th>
+            <th>Export</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsTableTwelve">
+        <thead>
+          <tr>
+            <th></th>
+            <th>View</th>
+            <th>Export</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions RIM 2 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsRIMTwo">
+        <thead>
+          <tr>
+            <th></th>
+            <th>RIM Maintenance</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsRIMTwo">
+        <thead>
+          <tr>
+            <th></th>
+            <th>RIM Maintenance</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions RIM 3 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsRIMThree">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Import</th>
+            <th>Export</th>
+            <th>Bulk Export</th>
+            <th>Import from Vault File Manager</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsRIMThree">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Import</th>
+            <th>Export</th>
+            <th>Bulk Export</th>
+            <th>Import from Vault File Manager</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions RIM 4 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsRIMFour">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Bulk Registration History Report</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsRIMFour">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Bulk Registration History Report</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions Table 13 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsTableThirteen">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Access</th>
+            <th>Access via Vault File Manager</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsTableThirteen">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Access</th>
+            <th>Access via Vault File Manager</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions Table 14 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsTableFourteen">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Run</th>
+            <th>Edit Match Fields</th>
+            <th>Edit Document Matches</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsTableFourteen">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Run</th>
+            <th>Edit Match Fields</th>
+            <th>Edit Document Matches</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions Table 15 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsTableFifteen">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Manage Connections</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsTableFifteen">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Manage Connections</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions Table 16 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsTableSixteen">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Manage Integrations</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsTableSixteen">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Manage Integrations</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Actions Table 17 with Compare -->
+<div class="container div-center-block mb-5 m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="vaultActionsTableSeventeen">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Show Create Button</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVaultActionsTableSeventeen">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Show Create Button</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Vault Owner Actions Tables -->
+<!-- Vault Owner Actions Table 1 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <h1 class="h5">Vault Owner Actions</h1>
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="VOActionsTableOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Re-render</th>
+            <th>Power Delete</th>
+            <th>Vault Loader</th>
+            <th>Record Migration</th>
+            <th>Document Migration</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <h1 class="h5">Compare Vault Owner Actions</h1>
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVOActionsTableOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Re-render</th>
+            <th>Power Delete</th>
+            <th>Vault Loader</th>
+            <th>Record Migration</th>
+            <th>Document Migration</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Owner Actions Table 2 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="VOActionsTableTwo">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Document Actions</th>
+            <th>All Document Read</th>
+            <th>All Document Create</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVOActionsTableTwo">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Document Actions</th>
+            <th>All Document Read</th>
+            <th>All Document Create</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Owner Actions Table 3 with Compare -->
+<div class="container div-center-block m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="VOActionsTableThree">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Object Record Actions</th>
+            <th>All Object Record Read</th>
+            <th>All Object Record Edit</th>
+            <th>All Object Record Delete</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVOActionsTableThree">
+        <thead>
+          <tr>
+            <th></th>
+            <th>All Object Record Actions</th>
+            <th>All Object Record Read</th>
+            <th>All Object Record Edit</th>
+            <th>All Object Record Delete</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Vault Owner Actions Table 4 with Compare -->
+<div class="container div-center-block mb-5 m-t-0-override d-flex justify-content-center">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="VOActionsTableFour">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Apply</th>
+            <th>Remove</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container d-none compare-container">
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareVOActionsTableFour">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Apply</th>
+            <th>Remove</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Client Applications Tables -->
+<div class="container div-center-block mb-5 m-t-0-override d-flex justify-content-center">
+  <!-- Client Applications Table -->
+  <div class="table-container">
+    <h1 class="h5">Client Applications</h1>
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="CAActionsTableOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Enable</th>
+            <th>Enable Direct Installation</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Compare Client Applications Table -->
+  <div class="table-container d-none compare-container">
+    <h1 class="h5">Compare Client Applications</h1>
+    <div class="table-responsive">
+      <table class="table brand-color table-hidden" id="compareCAActionsTableOne">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Enable</th>
+            <th>Enable Direct Installation</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+
+      <!-- End of Application Tables--> 
+    </div>
+    <!-- OBJECTS-->
+    <div id="tab3" class="tab-content text-center">
+      <div class="mb-5">
+        <label class="form-label" for="objectNames">Select an Object</label>
+        <select id="objectNames" class="drop-down-margin-left">
+          <optgroup label="Objects List">
+            <option value="" selected>-- Select an Object --</option>
+          </optgroup>
+        </select>
+      </div>
+      
+      <div class="container div-center-block mb-5 m-t-0-override d-flex justify-content-center">
+        <div class="table-container">
+          <h1 class="h5">Object-Level Permissions</h1>
+          <div class="table-responsive">
+            <table class="table brand-color" id="objectTable">
+              <thead>
+                <tr>
+                  <th>Object Types</th>
+                  <th>Read</th>
+                  <th>Create</th>
+                  <th>Edit</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div class="table-container d-none compare-container">
+          <h1 class="h5">Compare Object-Level Permissions</h1>
+          <div class="table-responsive">
+            <table class="table brand-color" id="objectCompareTable">
+              <thead>
+                <tr>
+                  <th>Object Types</th>
+                  <th>Read</th>
+                  <th>Create</th>
+                  <th>Edit</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    
+      <div class="container div-center-block mb-5 m-t-0-override d-flex justify-content-center">
+        <div class="table-container">
+          <h1 class="h5">Field-Level Permissions</h1>
+          <div class="table-responsive">
+            <table class="table brand-color" id="fieldsTable">
+              <thead>
+                <tr>
+                  <th>Field Name</th>
+                  <th>Read</th>
+                  <th>Edit</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div class="table-container d-none compare-container">
+          <h1 class="h5">Compare Field-Level Permissions</h1>
+          <div class="table-responsive">
+            <table class="table brand-color" id="fieldsCompareTable">
+              <thead>
+                <tr>
+                  <th>Field Name</th>
+                  <th>Read</th>
+                  <th>Edit</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+      <!-- TABS-->
+      <div id="tab4" class="tab-content text-center">
+        <div class="container div-center-block mb-5 m-t-0-override d-flex justify-content-center">
+          <div class="table-container">
+            <h1 class="h5">Tab Collections</h1>
+            <div class="table-responsive">
+              <table class="table brand-color" id="tabCollections">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>View</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div class="table-container d-none compare-container">
+            <h1 class="h5">Compare Tab Collections</h1>
+            <div class="table-responsive">
+              <table class="table brand-color" id="compareTabCollections">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>View</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <div class="container div-center-block mb-5 m-t-0-override d-flex justify-content-center">
+          <div class="table-container">
+            <h1 class="h5">Tabs</h1>
+            <div class="table-responsive">
+              <table class="table brand-color" id="tabs">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>View</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div class="table-container d-none compare-container">
+            <h1 class="h5">Compare Tabs</h1>
+            <div class="table-responsive">
+              <table class="table brand-color" id="compareTabs">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>View</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- PAGES-->
+      <div id="tab5" class="tab-content text-center">
+        <div class="container div-center-block mb-5 m-t-0-override d-flex justify-content-center">
+          <div class="table-container">
+            <h1 class="h5">All Pages</h1>
+            <div class="table-responsive">
+              <table class="table brand-color" id="pages">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>View</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div class="table-container d-none compare-container">
+            <h1 class="h5">Compare Pages</h1>
+            <div class="table-responsive">
+              <table class="table brand-color" id="comparePages">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>View</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+      <!-- MOBILE-->
+      <div id="tab6" class="tab-content text-center">
+        <div class="container div-center-block mb-5 m-t-0-override d-flex justify-content-center">
+          <div class="table-container">
+            <h1 class="h5">All Mobile Tabs</h1>
+            <div class="table-responsive">
+              <table class="table brand-color" id="mobileTabs">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>View</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div class="table-container d-none compare-container">
+            <h1 class="h5">Compare Mobile Tabs</h1>
+            <div class="table-responsive">
+              <table class="table brand-color" id="compareMobileTabs">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>View</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+  <!-- PERMISSION TABS END-->
+  <div class="scroll-to-top">
+    <a href="#scroll-to-top">
+      <button class="scroll-to-top-btn">
+        <span class="scroll-to-top-icn"
+          ><img src="/assets/img/chevron-double-up.svg"
+        /></span>
+      </button>
+    </a>
+  </div>
+</div>
+</div>
+
+
+<!--SCRIPTS-->
+    <script src="assets/js/clearAndHideTables.js"></script>
+    <script src="assets/js/showTab.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/script.js"></script>
+    <script src="assets/js/scriptCompare.js"></script>
+    <script type="module" src="assets/js/fillTables.js"></script>
+    <script type="module" src="assets/js/fillCompareTables.js"></script>
+    <script type="module" src="assets/js/selector.js"></script>
+
+
+</body>
+
+</html>
